@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24 Game - Levels</title>
+    <link rel="stylesheet" href="StyleSheet2.css">
+    <style>
+        body {
+            font-family: 'DotGothic16', sans-serif;
+            background: linear-gradient(25deg, black 0%, black 50%, orange 50%, orange 100%);
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .level-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+        }
+        .level-button {
+            background-color: darkorange;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .level-button:hover {
+            background-color: black;
+        }
+        .locked {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+        .game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .number-display {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .input-field {
+            width: 300px;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .submit-button {
+            background-color: darkorange;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .timer {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+        .difficulty-title {
+            font-size: 50px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="difficulty-title">NORMAL</h1>
+    <h1>Choose Your Level</h1>
+    <div class="level-container" id="levelContainer"></div>
+    
+    <div class="game-container" id="gameContainer">
+        <h2>Solve for 24</h2>
+        <div class="number-display" id="numbers"></div>
+        <input type="text" id="userInput" class="input-field" placeholder="Enter your equation...">
+        <button class="submit-button" onclick="checkSolution()">Submit</button>
+        <p id="resultMessage"></p>
+        <p class="timer">Time Left: <span id="timeLeft">250</span> sec | Points: <span id="points">30000</span></p>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const levels = 10;
+            const levelContainer = document.getElementById("levelContainer");
+            const difficulty = document.querySelector(".difficulty-title").textContent.toLowerCase();
+            const storageKey = `unlockedLevels_${difficulty}`;
+            let unlockedLevels = parseInt(localStorage.getItem(storageKey)) || 1;
+            
+            for (let i = 1; i <= levels; i++) {
+                const button = document.createElement("button");
+                button.textContent = "Level " + i;
+                button.classList.add("level-button");
+                
+                if (i > unlockedLevels) {
+                    button.classList.add("locked");
+                    button.disabled = true;
+                } else {
+                    button.onclick = () => startLevel(i);
+                }
+                
+                levelContainer.appendChild(button);
+            }
+        });
+
+        let timer;
+        let timeLeft = 250;
+        let points = 30000;
+
+        function startLevel(level) {
+            document.getElementById("levelContainer").style.display = "none";
+            document.getElementById("gameContainer").style.display = "flex";
+            generateNumbers(level);
+            startTimer();
+        }
+
+        function generateNumbers(level) {
+            let numbers = [];
+            while (numbers.length < 4) {
+                let num;
+                if (level < 9) {
+                    num = Math.random() < 0.5 ? Math.floor(Math.random() * 10) + 1 : Math.floor(Math.random() * 90) + 10;
+                } else {
+                    num = Math.floor(Math.random() * 90) + 10;
+                }
+                numbers.push(num);
+            }
+            document.getElementById("numbers").textContent = numbers.join(" ");
+            localStorage.setItem("currentNumbers", JSON.stringify(numbers));
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    points -= 120; // Reduce points gradually
+                    document.getElementById("timeLeft").textContent = timeLeft;
+                    document.getElementById("points").textContent = points;
+                } else {
+                    clearInterval(timer);
+                    document.getElementById("resultMessage").textContent = "Time's up! You lose.";
+                    setTimeout(() => location.reload(), 2000);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
