@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24 Game</title>
+    <!-- Font links -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="StyleSheet2.css">
+    
+    <style>
+        @font-face {
+            font-family: 'PressStart2P';
+            src: url('https://fonts.cdnfonts.com/s/7397/PressStart2P-Regular.woff') format('woff');
+        }
+
+        body {
+            font-family: 'DotGothic16', sans-serif;
+            background-image: linear-gradient(25deg, black 0%, black 50%, orange 50%, orange 100%);
+
+            background-size: cover;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            max-width: 400px;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: none;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ffcc00;
+            margin-bottom: 20px;
+            font-family: 'Mochiy Pop One', sans-serif;
+        }
+
+        #playButton {
+            padding: 10px 20px;
+           font-size: 1.5vw;
+           background-color: darkorange;
+          color: white;
+           border: none;
+           border-radius: 5px;
+          cursor: pointer;
+         transition: background-color 0.3s;
+         z-index: 1000; /* Ensure button is above blocks */
+        }
+
+        #playButton:hover {
+         background-color: black;
+        }   
+
+
+        #playButton:active {
+            transform: scale(0.95);
+        }
+
+        input[type="number"] {
+    width: 60px; /* Set a consistent width */
+    height: 50px; /* Increased height for better usability */
+    font-size: 1.2rem; /* Adjust font size for visibility */
+    margin: 0 5px; /* Add spacing between inputs */
+    border: 2px solid #ffcc00; /* Border styling */
+    background-color: #222; /* Dark background for contrast */
+    color: #fff; /* White text for readability */
+    text-align: center; /* Center align text in input */
+    border-radius: 8px; /* Rounded corners for input */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Subtle shadow */
+}
+
+        button {
+            background-color: #ffcc00;
+            color: #000000;
+            border: 2px solid #c7a200;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            font-family: 'DotGothic16', sans-serif;
+        }
+        button:hover {
+         background-color: darkorange;
+        }   
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #expression {
+            margin: 20px 0;
+            font-size: 24px;
+            min-height: 40px;
+            font-family: 'DotGothic16', sans-serif;
+        }
+
+        #result,
+        #tips {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #28a745;
+            font-family: 'DotGothic16', sans-serif;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        #result.error {
+            color: #dc3545;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #feedbackButton {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #ffcc00;
+            color: #333;
+            border: 1px solid #ffae00;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 9999;
+        }
+        #feedbackButton:hover {
+         background-color: darkorange;
+        }   
+
+
+        #feedbackButton:active {
+            transform: scale(0.95);
+        }
+
+             
+
+        /* Modal styles */
+        #welcomeModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        #welcomeContent {
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            transition: opacity 2s ease-out;
+        }
+
+        #continueButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ffcc00;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-family: 'DotGothic16', sans-serif;
+            font-size: 18px;
+        }
+
+        #continueButton:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body>
+ 
+    <div class="container2"></div>
+    <div class="dark-overlay"></div>
+    <div id="playButton" onclick="startGame()">PLAY</div>
+    <div class="container">
+       
+        <h1>24 Game</h1>
+        
+        <div id="inputNumbers">
+            <input type="number" id="number1" placeholder="01" min="1" >
+            <input type="number" id="number2" placeholder="02" min="1" >
+            <input type="number" id="number3" placeholder="03" min="1" >
+            <input type="number" id="number4" placeholder="04" min="1" >
+            <button onclick="initializeGame()">Submit</button>
+           
+        </div>
+        <div id="numbers" class="hidden"></div>
+        <div id="expression"></div>
+        <button id="revealAnswerButton" class="hidden" onclick="revealAnswers()">Reveal Answer</button>
+        <div id="result"></div>
+        <div id="tips" class="hidden" onscroll="checkScroll()"></div>
+        </div>
+        <div id="numbers" class="hidden"></div>
+        <div id="expression"></div>
+        <button id="revealAnswerButton" class="hidden" onclick="revealAnswers()">Reveal Answer</button>
+        <div id="result"></div>
+        <div id="tips" class="hidden" onscroll="checkScroll()"></div>
+    </div>
+
+    <button id="feedbackButton" onclick="sendFeedback()">Send Feedback</button>
+    <button id="GuideButton" class="hidden" onclick="goToGuide()">Guide</button>
+   
+    
+
+
+    <script>
+        let numbers = [];
+        let expression = '';
+        let currentSolutions = [];
+
+        // Modal Close Function
+        function closeModal() {
+            const welcomeContent = document.getElementById('welcomeContent');
+            welcomeContent.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('welcomeModal').style.display = 'none';
+            }, 2000); // Wait 2 seconds before hiding the modal
+        }
+
+        function startGame() {
+    const playButton = document.getElementById('playButton');
+    const container = document.querySelector('.container');
+    const overlay = document.querySelector('.dark-overlay');
+    
+
+    overlay.style.opacity = '1';
+    playButton.style.opacity = '0';
+    setTimeout(() => {
+        playButton.style.display = 'none';
+        container.style.display = 'block';
+       
+        setTimeout(() => {
+            container.style.opacity = '1';
+        }, 50);
+    }, 1000);
+}
+
+
+
+        function initializeGame() {
+            numbers = [
+                parseInt(document.getElementById('number1').value),
+                parseInt(document.getElementById('number2').value),
+                parseInt(document.getElementById('number3').value),
+                parseInt(document.getElementById('number4').value)
+            ];
+
+            expression = '';
+            document.getElementById('expression').textContent = expression;
+            document.getElementById('result').textContent = '';
+
+            setTimeout(() => {
+                document.getElementById('result').textContent = 'Showing possible answers...';
+                generateTips();
+                startRevealButtonTimer(); // Button appears only if solutions are found
+            }, 1000);
+        }
+
+        function appendNumber(number) {
+            expression += number;
+            document.getElementById('expression').textContent = expression;
+        }
+
+        function revealAnswers() {
+            revealSymbols();
+        }
+
+        function generateTips() {
+            currentSolutions = findSolutions(numbers); // Store the solutions
+            const tipsElement = document.getElementById('tips');
+            const resultElement = document.getElementById('result');
+            const revealButton = document.getElementById('revealAnswerButton');
+
+            if (currentSolutions.length > 0) {
+                tipsElement.innerHTML = "Possible ways to reach 24:<br>" + currentSolutions.map(tip => `<div>${tip.replace(/[+\-*/]/g, '_')}</div>`).join('');
+                tipsElement.style.display = 'block';
+                resultElement.textContent = '';
+            } else {
+                tipsElement.style.display = 'none';
+                resultElement.textContent = 'No solution found.';
+                revealButton.style.display = 'none'; // Hide button if no solution
+            }
+        }
+
+        function findSolutions(nums) {
+            let solutions = [];
+            const operators = ['+', '-', '*', '/'];
+
+            function helper(a, b, c, d) {
+                for (let op1 of operators) {
+                    for (let op2 of operators) {
+                        for (let op3 of operators) {
+                            let expressions = [
+                                `${a} ${op1} ${b} ${op2} ${c} ${op3} ${d}`,
+                                `(${a} ${op1} ${b}) ${op2} ${c} ${op3} ${d}`,
+                                `${a} ${op1} (${b} ${op2} ${c}) ${op3} ${d}`,
+                                `${a} ${op1} ${b} ${op2} (${c} ${op3} ${d})`,
+                                `(${a} ${op1} ${b}) ${op2} (${c} ${op3} ${d})`
+                            ];
+                            for (let expr of expressions) {
+                                try {
+                                    if (Math.abs(eval(expr) - 24) < 1e-10) {
+                                        solutions.push(expr);
+                                    }
+                                } catch (e) { }
+                            }
+                        }
+                    }
+                }
+            }
+
+            helper(nums[0], nums[1], nums[2], nums[3]);
+            return solutions;
+        }
+
+        let symbolsRevealed = false; // Track whether symbols are revealed
+
+function revealAnswers() {
+    const tipsElement = document.getElementById('tips');
+    const revealButton = document.getElementById('revealAnswerButton');
+
+    if (symbolsRevealed) {
+        // Hide symbols
+        tipsElement.innerHTML = currentSolutions.map(tip => `<div>${tip.replace(/[+\-*/]/g, '_')}</div>`).join('');
+        revealButton.textContent = 'Reveal Answer'; // Update button text
+    } else {
+        // Show symbols
+        tipsElement.innerHTML = currentSolutions.map(tip => `<div>${tip}</div>`).join('');
+        revealButton.textContent = 'Hide Answer'; // Update button text
+    }
+    symbolsRevealed = !symbolsRevealed; // Toggle the state
+}
+
+
+        function checkScroll() {
+            const tips = document.getElementById('tips');
+            if (tips.scrollTop + tips.clientHeight >= tips.scrollHeight) {
+                document.getElementById('revealAnswerButton').style.display = 'block';
+            }
+        }
+
+        function startRevealButtonTimer() {
+            const revealButton = document.getElementById('revealAnswerButton');
+            if (currentSolutions.length > 0) {
+                setTimeout(() => {
+                    revealButton.style.display = 'block';
+                }, 5000); // Show button after 5 seconds if solutions exist
+            }
+        }
+
+        function sendFeedback() {
+            window.location.href = 'https://docs.google.com/forms/d/1lrI2omD_Zpzt_RJRShivhWZ_uWskpvUQF_Xv1JH9f5M/viewform?pli=1&pli=1&fbclid=IwZXh0bgNhZW0CMTEAAR0O-FOX6U-ZCWvrjJoVGpth1q75UvPo7zrDwF6DuB0pjtvU4Cph0HmHyAs_aem_crPeei5VvGdVVu1WxyxbOA&edit_requested=true';
+        }
+
+        
+
+        
+        function findSolutions(nums) {
+    const solutions = [];
+    const operators = ['+', '-', '*', '/'];
+
+    // Helper function to generate all permutations of an array
+    function permute(array, m = []) {
+        if (array.length === 0) {
+            permutations.push(m);
+        } else {
+            for (let i = 0; i < array.length; i++) {
+                const current = array.slice();
+                const next = current.splice(i, 1);
+                permute(current.slice(), m.concat(next));
+            }
+        }
+    }
+
+    const permutations = [];
+    permute(nums);
+
+    // Evaluate all expressions for each permutation
+    permutations.forEach(permutation => {
+        const [a, b, c, d] = permutation;
+        for (let op1 of operators) {
+            for (let op2 of operators) {
+                for (let op3 of operators) {
+                    const expressions = [
+                        `${a} ${op1} ${b} ${op2} ${c} ${op3} ${d}`,
+                        `(${a} ${op1} ${b}) ${op2} ${c} ${op3} ${d}`,
+                        `${a} ${op1} (${b} ${op2} ${c}) ${op3} ${d}`,
+                        `${a} ${op1} ${b} ${op2} (${c} ${op3} ${d})`,
+                        `(${a} ${op1} ${b}) ${op2} (${c} ${op3} ${d})`
+                    ];
+                    expressions.forEach(expr => {
+                        try {
+                            if (Math.abs(eval(expr) - 24) < 1e-10) {
+                                solutions.push(expr);
+                            }
+                        } catch (e) {
+                            // Ignore invalid expressions (e.g., division by zero)
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    return solutions;
+}
+
+    </script>
+   <script src="anime.min.js"></script>
+    
+   <script>
+     const container = document.querySelector('.container2');
+
+// Create 100 blocks
+for (let i = 0; i < 100; i++) {
+    const block = document.createElement('div');
+    block.classList.add('block');
+
+    // Position the blocks randomly on the left side
+    block.style.top = `${Math.random() * 100}vh`; // Random vertical position
+    block.style.left = `-${Math.random() * 50}px`; // Slightly off-screen on the left
+    block.style.animationDelay = `${Math.random() * 5}s`; // Random animation delay
+    block.style.animationDuration = `${3 + Math.random() * 2}s`; // Random animation duration
+
+    container.appendChild(block);
+}
+
+// Animate blocks
+function animateBlocks() {
+    anime({
+        targets: '.block',
+        translateX: function () {
+            return anime.random(1200, 1500); // Move right randomly
+        },
+        translateY: function () {
+            return anime.random(-500, 500); // Random vertical movement
+        },
+        scale: function () {
+            return anime.random(1, 3); // Random scaling
+        },
+        easing: 'linear', // Smooth linear animation
+        duration: 2500, // Duration of the animation
+        delay: anime.stagger(10), // Delay between each block's animation
+        complete: animateBlocks, // Loop the animation
+    });
+}
+
+animateBlocks(); // Start the animation
+            animateBlocks()
+        </script>
+       
+   </script>
+   
+</body>
+
+</html>
